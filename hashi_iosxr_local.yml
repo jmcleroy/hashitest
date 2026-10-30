@@ -1,0 +1,54 @@
+---
+- name: Rotate IOS XE SNMP community via HashiCorp Vault
+  hosts: all
+  gather_facts: false
+  connection: ansible.netcommon.network_cli
+  vars:
+    vault_url: "{{ lookup('env', 'VAULT_ADDR') }}"
+    vault_role_id: "{{ lookup('env', 'VAULT_APPROLE_ROLE_ID') }}"
+    vault_secret_id: "{{ lookup('env', 'VAULT_APPROLE_SECRET_ID') }}"
+    vault_path: "aap/hashi/cisco-ios-xr"
+    snmp_acl_view: "RO SystemOwner"
+    vault_auth: &vault_auth
+      url: "{{ vault_url }}"
+      auth_method: approle
+      role_id: "{{ vault_role_id }}"
+      secret_id: "{{ vault_secret_id }}"
+      engine_mount_point: "kv"
+      namespace: "AAP"
+     
+  tasks:
+   - name: 1 | Pull current SNMP community from Vault KV v2 (AppRole)
+     hashicorp.vault.kv2_secret_info:
+       <<: *vault_auth
+       path: "{{ vault_path }}"
+       url: "{{ vault_url }}"
+     register: vault_current
+     delegate_to: localhost
+     #no_log: true
+
+   - name: 2 | Generate new random SNMP community
+     ansible.builtin.set_fact:
+       username: "{{ vault_current.secret.username }}"
+       new_community: "{{ lookup('ansible.builtin.password', '/dev/null length=24 chars=ascii_letters,digits') }}"
+     #no_log: true
+ 
+   - name: 2 | Write new community to Vault KV v2 (new version, check-and-set)
+     hashicorp.vault.kv2_secret:
+       <<: *vault_auth
+       path: "{{ vault_mount }}/data/{{ vault_path }}"
+       data:
+         options:
+          cas: "{{ vault_current.metadata.version | int }}"
+       data:
+         username: "{{ new_community }}"
+         rotated_by: ansible
+         rotated_at: "{{ now(utc=true).isoformat() }}"
+     register: vault_write
+     delegate_to: localhost
+     #no_log: true
+
+  - name: Add SNMP community string using ios_config
+    cisco.ios.ios_config:
+      lines:
+        - snmp-server community "{{ new_community }}" RO
