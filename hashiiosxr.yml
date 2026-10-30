@@ -9,6 +9,7 @@
     vault_secret_id: "{{ lookup('env', 'VAULT_APPROLE_SECRET_ID') }}"
     vault_path: "aap/hashi/ciscoiosxr"
     snmp_acl_view: "RO SystemOwner"
+    engine_mount_point: "kv"
     vault_auth: &vault_auth
       url: "{{ vault_url }}"
       auth_method: approle
