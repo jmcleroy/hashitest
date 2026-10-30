@@ -27,10 +27,10 @@
      delegate_to: localhost
      #no_log: true
 
-   - name: 2 | Generate new random SNMP community
+   - name: 2 | Generate new random local password community
      ansible.builtin.set_fact:
        username: "{{ vault_current.secret.username }}"
-       new_community: "{{ lookup('ansible.builtin.password', '/dev/null length=24 chars=ascii_letters,digits') }}"
+       new_community: "{{ lookup('ansible.builtin.password', '/dev/null length=16 chars=ascii_letters,digits') }}"
      #no_log: true
  
    - name: 2 | Write new community to Vault KV v2 (new version, check-and-set)
