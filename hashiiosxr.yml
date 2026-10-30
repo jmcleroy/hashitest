@@ -14,7 +14,7 @@
       auth_method: approle
       role_id: "{{ vault_role_id }}"
       secret_id: "{{ vault_secret_id }}"
-      engine_mount_point: "approle"
+      #engine_mount_point: "approle"
       #namespace: "kv"
      
   tasks:
