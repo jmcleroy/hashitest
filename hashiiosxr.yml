@@ -21,7 +21,7 @@
    - name: 1 | Pull current SNMP community from Vault KV v2 (AppRole)
      hashicorp.vault.kv2_secret_info:
        <<: *vault_auth
-       path: "kv/data/aap/hashi/ciscoiosxr"
+       path: "aap/hashi/ciscoiosxr"
        url: "{{ vault_url }}"
      register: vault_current
      delegate_to: localhost
