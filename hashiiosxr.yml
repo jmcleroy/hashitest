@@ -4,13 +4,16 @@
   gather_facts: false
   connection: ansible.netcommon.network_cli
   vars:
-   vault_path: "aap/hashi/ciscoiosxr"
-   snmp_acl_view: "RO SystemOwner"
-   vault_auth: &vault_auth
-     url: "{{ vault_url }}"
-     auth_method: approle
-     role_id: "{{ vault_role_id }}"
-     secret_id: "{{ vault_secret_id }}"
+    vault_url: "{{ lookup('env', 'VAULT_ADDR') }}"
+    vault_role_id: "{{ lookup('env', 'VAULT_APPROLE_ROLE_ID') }}"
+    vault_secret_id: "{{ lookup('env', 'VAULT_APPROLE_SECRET_ID') }}"
+    vault_path: "aap/hashi/ciscoiosxr"
+    snmp_acl_view: "RO SystemOwner"
+    vault_auth: &vault_auth
+      url: "{{ vault_url }}"
+      auth_method: approle
+      role_id: "{{ vault_role_id }}"
+      secret_id: "{{ vault_secret_id }}"
      
   tasks:
    - name: 1 | Pull current SNMP community from Vault KV v2 (AppRole)
