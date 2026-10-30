@@ -1,0 +1,23 @@
+---
+- name: Rotate IOS XR SNMP community via HashiCorp Vault
+  hosts: all
+  gather_facts: false
+  connection: ansible.netcommon.network_cli
+  vars:
+   vault_path: "aap/hashi/ciscoiosxr"
+   snmp_acl_view: "RO SystemOwner"
+   vault_auth: &vault_auth
+     url: "{{ vault_url }}"
+     auth_method: approle
+     role_id: "{{ vault_role_id }}"
+     secret_id: "{{ vault_secret_id }}"
+     
+  tasks:
+   - name: 1 | Pull current SNMP community from Vault KV v2 (AppRole)
+     hashicorp.vault.kv2_secret_info:
+       <<: *vault_auth
+       path: "aap/hashi/cisco-ios-xr"
+       url: "{{ vault_url }}"
+     register: vault_current
+     delegate_to: localhost
+     #no_log: true
