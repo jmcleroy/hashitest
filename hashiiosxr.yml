@@ -26,24 +26,22 @@
      register: vault_current
      delegate_to: localhost
      #no_log: true
-
-    - name: 2 | Generate new random SNMP community
-      ansible.builtin.set_fact:
-        community: "{{ vault_current.secret.comunity }}"
-        new_community: "{{ lookup('ansible.builtin.password', '/dev/null length=24 chars=ascii_letters,digits') }}"
-      #no_log: true
- 
-    - name: 2 | Write new community to Vault KV v2 (new version, check-and-set)
-      hashicorp.vault.kv2_secret:
-        <<: *vault_auth
-        path: "{{ vault_mount }}/data/{{ vault_path }}"
-        data:
-          options:
-            cas: "{{ vault_current.metadata.version | int }}"
-          data:
-            community: "{{ new_community }}"
-            rotated_by: ansible
-            rotated_at: "{{ now(utc=true).isoformat() }}"
-      register: vault_write
-      delegate_to: localhost
-      #no_log: true
+  - name: 2 | Generate new random SNMP community
+    ansible.builtin.set_fact:
+      community: "{{ vault_current.secret.comunity }}"
+      new_community: "{{ lookup('ansible.builtin.password', '/dev/null length=24 chars=ascii_letters,digits') }}"
+    #no_log: true
+  - name: 2 | Write new community to Vault KV v2 (new version, check-and-set)
+    hashicorp.vault.kv2_secret:
+      <<: *vault_auth
+      path: "{{ vault_mount }}/data/{{ vault_path }}"
+      data:
+        options:
+          cas: "{{ vault_current.metadata.version | int }}"
+      data:
+        community: "{{ new_community }}"
+        rotated_by: ansible
+        rotated_at: "{{ now(utc=true).isoformat() }}"
+    register: vault_write
+    delegate_to: localhost
+    #no_log: true
