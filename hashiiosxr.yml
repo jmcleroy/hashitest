@@ -14,13 +14,14 @@
       auth_method: approle
       role_id: "{{ vault_role_id }}"
       secret_id: "{{ vault_secret_id }}"
-      namespace: "kv"
+      engine_mount_point: "approle"
+      #namespace: "kv"
      
   tasks:
    - name: 1 | Pull current SNMP community from Vault KV v2 (AppRole)
      hashicorp.vault.kv2_secret_info:
        <<: *vault_auth
-       path: "aap/hashi/ciscoiosxr"
+       path: "kv/data/aap/hashi/ciscoiosxr"
        url: "{{ vault_url }}"
      register: vault_current
      delegate_to: localhost
