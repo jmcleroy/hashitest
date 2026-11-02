@@ -1,5 +1,5 @@
 ---
-- name: Rotate IOS XE SNMP community via HashiCorp Vault
+- name: Rotate IOS/IOSXE SNMP community via HashiCorp Vault
   hosts: all
   gather_facts: false
   connection: ansible.netcommon.network_cli
@@ -7,7 +7,7 @@
     vault_url: "{{ lookup('env', 'VAULT_ADDR') }}"
     vault_role_id: "{{ lookup('env', 'VAULT_APPROLE_ROLE_ID') }}"
     vault_secret_id: "{{ lookup('env', 'VAULT_APPROLE_SECRET_ID') }}"
-    vault_path: "aap/hashi/cisco-ios-xr"
+    vault_path: "aap/hashi/cisco-ios-xe"
     snmp_acl_view: "RO SystemOwner"
     vault_auth: &vault_auth
       url: "{{ vault_url }}"
@@ -29,7 +29,7 @@
 
    - name: 2 | Generate new random local password community
      ansible.builtin.set_fact:
-       username: "{{ vault_current.secret.username }}"
+       community: "{{ vault_current.secret.comunity }}"
        new_community: "{{ lookup('ansible.builtin.password', '/dev/null length=16 chars=ascii_letters,digits') }}"
      #no_log: true
  
