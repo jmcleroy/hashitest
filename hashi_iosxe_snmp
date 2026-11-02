@@ -29,14 +29,14 @@
 
    - name: 2 | Generate new random local password community
      ansible.builtin.set_fact:
-       community: "{{ vault_current.secret.community }}"
+       #community: "{{ vault_current.secret.community }}"
        new_community: "{{ lookup('ansible.builtin.password', '/dev/null length=16 chars=ascii_letters,digits') }}"
      #no_log: true
  
    - name: 2 | Write new community to Vault KV v2 (new version, check-and-set)
      hashicorp.vault.kv2_secret:
        <<: *vault_auth
-       path: "{{ vault_mount }}/data/{{ vault_path }}"
+       path: "{{ vault_path }}"
        data:
          options:
           cas: "{{ vault_current.metadata.version | int }}"
