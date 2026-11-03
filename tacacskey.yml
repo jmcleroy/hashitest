@@ -49,6 +49,6 @@
      #no_log: true
 
   - name: Add SNMP community string using ios_config
-    cisco.ios.ios_config:
+    cisco.iosxr.iosxr_config:
       lines:
         - tacacs-server host 10.255.255.1 port 49 key 7 "{{ new_tacacskey }}" timeout 1
