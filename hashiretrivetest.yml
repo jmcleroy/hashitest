@@ -27,6 +27,9 @@
      delegate_to: localhost
      #no_log: true
 
+   - name: Debug the entire registered variable
+     ansible.builtin.debug: vault_current
+
    - name: 2 | Generate new random SNMP community
      ansible.builtin.set_fact:
        access_key: "{{ vault_current.data.access_key }}"
