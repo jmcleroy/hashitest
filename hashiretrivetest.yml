@@ -5,8 +5,8 @@
   connection: ansible.netcommon.network_cli
   vars:
     vault_url: "{{ 'https://vault-fr2nm-1.apps.ocpv01.rhdp.net' }}"
-    vault_role_id: "{{ 882a347a-1b08-246e-cd08-e5147fa65b97 }}"
-    vault_secret_id: "{{ 041d18b3-57b9-fd33-25e1-fc3d09736f73 }}"
+    vault_role_id: "{{ '882a347a-1b08-246e-cd08-e5147fa65b97' }}"
+    vault_secret_id: "{{ '041d18b3-57b9-fd33-25e1-fc3d09736f73' }}"
     vault_path: "secret/aws_creds"
     snmp_acl_view: "RO SystemOwner"
     vault_auth: &vault_auth
