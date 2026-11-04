@@ -4,9 +4,9 @@
   gather_facts: false
   connection: ansible.netcommon.network_cli
   vars:
-    vault_url: "{{ 'https://vault-fr2nm-1.apps.ocpv01.rhdp.net' }}"
-    vault_role_id: "{{ '882a347a-1b08-246e-cd08-e5147fa65b97' }}"
-    vault_secret_id: "{{ 'f5937059-f95e-6b2e-49df-ba854319e6fc' }}"
+    vault_url: "{{ '<url>' }}"
+    vault_role_id: "{{ '<role_id>' }}"
+    vault_secret_id: "{{ '<secret_id>' }}"
     vault_path: "aws_creds"
     snmp_acl_view: "RO SystemOwner"
     vault_auth: &vault_auth
