@@ -29,6 +29,6 @@
 
    - name: 2 | Generate new random SNMP community
      ansible.builtin.set_fact:
-       access_key: "{{ 'vault_current.access_key' }}"
+       access_key: "{{ vault_current.data.access_key }}"
        #new_community: "{{ lookup('ansible.builtin.password', '/dev/null length=24 chars=ascii_letters,digits') }}"
      #no_log: true
