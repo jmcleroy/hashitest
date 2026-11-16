@@ -44,6 +44,13 @@
      delegate_to: localhost
      become: false
 
+   - name: Change the local password on the device
+     cisco.ios.ios_user:
+        name: "{{ vault_user }}"
+        password: "{{ new_password }}"
+        update_password: always
+        state: present
+
    - name: Kill the current SSH session
      ansible.builtin.meta: reset_connection
 
