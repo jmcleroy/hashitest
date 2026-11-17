@@ -1,8 +1,8 @@
 ---
 - name: Change local password for IOS/IOSXE devices
   hosts: all
-  gather_facts: false
-  connection: ansible.netcommon.network_cli
+  gather_facts: true
+  #connection: ansible.netcommon.network_cli
   vars:
     vault_url: "{{ lookup('env', 'VAULT_ADDR') }}"
     vault_role_id: "{{ lookup('env', 'VAULT_APPROLE_ROLE_ID') }}"
