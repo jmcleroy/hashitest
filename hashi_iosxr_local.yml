@@ -27,8 +27,8 @@
        <<: *vault_auth
        path: "{{ vault_path }}"
        url: "{{ vault_url }}"
-        data:
-          local_password: "{{ new_password }}"
+         data:
+           local_password: "{{ new_password }}"
      delegate_to: localhost
      become: false
 
