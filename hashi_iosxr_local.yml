@@ -53,6 +53,12 @@
      ansible.builtin.set_fact:
        local_password: "{{ vault_new.secret.data.local_password }}"
      delegate_to: localhost
+     
+    - name: Update password for target user
+      ansible.builtin.user:
+        name: rhel
+        password: "{{ local_password }}"
+   #   no_log: true
    
    #- name: Change the local password on the device
    #  cisco.ios.ios_user:
@@ -61,9 +67,13 @@
    #     update_password: always
    #     state: present
 
-   #- name: Kill the current SSH session
-   #  ansible.builtin.meta: reset_connection
-
+   - name: Kill the current SSH session
+     ansible.builtin.meta: reset_connection
+       
+   - name: Log back in with the new password
+     ansible.builtin.command: whoami
+     register: result
+     
    #- name: Log back in with the new password
    #  cisco.ios.ios_config:
    #    - show running configuration
