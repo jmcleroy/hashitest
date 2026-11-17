@@ -22,16 +22,6 @@
        new_password: "{{ lookup('ansible.builtin.password', '/dev/null length=16 chars=ascii_letters,digits,punctuation') }}"
      #no_log: true
 
-   - name: Create or update a KV2 secret in HashiCorp Vault
-     hashicorp.vault.kv2_secret:
-       <<: *vault_auth
-       path: "{{ vault_path }}"
-       url: "{{ vault_url }}"
-       state: present
-       data:
-         local_password: "{{ new_password }}"
-    # no_log: true
-
    - name: Pull current local device password from Vault KV v2 (AppRole)
      hashicorp.vault.kv2_secret_info:
        <<: *vault_auth
@@ -40,22 +30,38 @@
      register: vault_current
      delegate_to: localhost
      #no_log: true
+
+   - name: Merge and update specific keys
+     hashicorp.vault.vault_kv2_write:
+       <<: *vault_auth
+       path: "{{ vault_path }}"
+       url: "{{ vault_url }}"
+       data: "{{ vault_current.secret | combine({'local_password': '{{ new_password }}') }}"
+
+   - name: Pull current local device password from Vault KV v2 (AppRole)
+     hashicorp.vault.kv2_secret_info:
+       <<: *vault_auth
+       path: "{{ vault_path }}"
+       url: "{{ vault_url }}"
+     register: vault_new
+     delegate_to: localhost
+     #no_log: true
      
    - name: Pull current local password from Vault KV v2 (AppRole)
      ansible.builtin.set_fact:
-       local_password: "{{ vault_current.secret.data.local_password }}"
+       local_password: "{{ vault_new.secret.data.local_password }}"
    
-   - name: Change the local password on the device
-     cisco.ios.ios_user:
-        name: "{{ vault_user }}"
-        password: "{{ new_password }}"
-        update_password: always
-        state: present
+   #- name: Change the local password on the device
+   #  cisco.ios.ios_user:
+   #     name: "{{ vault_user }}"
+   #     password: "{{ new_password }}"
+   #     update_password: always
+   #     state: present
 
-   - name: Kill the current SSH session
-     ansible.builtin.meta: reset_connection
+   #- name: Kill the current SSH session
+   #  ansible.builtin.meta: reset_connection
 
-   - name: Log back in with the new password
-     cisco.ios.ios_config:
-       - show running configuration
-     register: result
+   #- name: Log back in with the new password
+   #  cisco.ios.ios_config:
+   #    - show running configuration
+   #  register: result
