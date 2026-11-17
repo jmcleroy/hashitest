@@ -54,10 +54,10 @@
        local_password: "{{ vault_new.secret.data.local_password }}"
      delegate_to: localhost
      
-    - name: Update password for target user
-      ansible.builtin.user:
-        name: rhel
-        password: "{{ local_password }}"
+   - name: Update password for target user
+     ansible.builtin.user:
+       name: rhel
+       password: "{{ local_password }}"
    #   no_log: true
    
    #- name: Change the local password on the device
