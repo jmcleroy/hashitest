@@ -1,8 +1,8 @@
 ---
 - name: Change local password for IOS/IOSXE devices
   hosts: all
-  gather_facts: true
-  #connection: ansible.netcommon.network_cli
+  gather_facts: false
+  connection: ansible.netcommon.network_cli
   vars:
     vault_url: "{{ lookup('env', 'VAULT_ADDR') }}"
     vault_role_id: "{{ lookup('env', 'VAULT_APPROLE_ROLE_ID') }}"
@@ -39,6 +39,7 @@
        url: "{{ vault_url }}"
        data: "{{ vault_current.secret.data | combine({'local_password': new_password}) }}"
      delegate_to: localhost
+     #no_log: true
 
    - name: Pull current local device password from Vault KV v2 (AppRole)
      hashicorp.vault.kv2_secret_info:
@@ -53,28 +54,19 @@
      ansible.builtin.set_fact:
        local_password: "{{ vault_new.secret.data.local_password }}"
      delegate_to: localhost
-     
-   - name: Update password for target user
-     ansible.builtin.user:
-       name: rhel
-       password: "{{ local_password }}"
-   #   no_log: true
+     #no_log: true
    
-   #- name: Change the local password on the device
-   #  cisco.ios.ios_user:
-   #     name: "{{ vault_user }}"
-   #     password: "{{ new_password }}"
-   #     update_password: always
-   #     state: present
+   - name: Change the local password on the device
+     cisco.ios.ios_user:
+        name: "{{ vault_user }}"
+        password: "{{ local_password }}"
+        update_password: always
+        state: present
 
    - name: Kill the current SSH session
      ansible.builtin.meta: reset_connection
        
-   - name: Log back in with the new password
-     ansible.builtin.command: whoami
+   - name: Log back in with the new password to the device
+     cisco.ios.ios_config:
+       - show running configuration
      register: result
-     
-   #- name: Log back in with the new password
-   #  cisco.ios.ios_config:
-   #    - show running configuration
-   #  register: result
