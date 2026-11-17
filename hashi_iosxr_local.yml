@@ -56,5 +56,6 @@
      ansible.builtin.meta: reset_connection
 
    - name: Log back in with the new password
-     ansible.builtin.command: whoami
+     cisco.ios.ios_config:
+       - show running configuration
      register: result
