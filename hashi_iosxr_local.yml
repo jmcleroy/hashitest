@@ -22,14 +22,14 @@
        new_password: "{{ lookup('ansible.builtin.password', '/dev/null length=16 chars=ascii_letters,digits,punctuation') }}"
      #no_log: true
 
-  # - name: Create or update a KV2 secret in HashiCorp Vault
-  #   hashicorp.vault.kv2_secret:
-  #     <<: *vault_auth
-  #     path: "{{ vault_path }}"
-  #     url: "{{ vault_url }}"
-  #     state: present
-  #     data:
-  #       local_password: "{{ new_password }}"
+   - name: Create or update a KV2 secret in HashiCorp Vault
+     hashicorp.vault.kv2_secret:
+       <<: *vault_auth
+       path: "{{ vault_path }}"
+       url: "{{ vault_url }}"
+       state: present
+       data:
+         local_password: "{{ new_password }}"
     # no_log: true
 
    - name: Pull current local device password from Vault KV v2 (AppRole)
