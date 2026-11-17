@@ -27,9 +27,6 @@
        <<: *vault_auth
        path: "{{ vault_path }}"
        data:
-         options:
-          cas: "{{ vault_current.metadata.version | int }}"
-       data:
          local_password: "{{ new_password }}"
          rotated_by: ansible
          rotated_at: "{{ now(utc=true).isoformat() }}"
