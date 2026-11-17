@@ -26,10 +26,6 @@
      delegate_to: localhost
      #no_log: true
 
-   - name: Pull current local password from Vault KV v2 (AppRole)
-     ansible.builtin.set_fact:
-       local_password: "{{ vault_current.secret.data.data.password }}"
-
    - name: Generate new random local password 
      ansible.builtin.set_fact:
        new_password: "{{ lookup('ansible.builtin.password', '/dev/null length=16 chars=ascii_letters,digits,punctuation') }}"
@@ -43,13 +39,23 @@
           new: "{{ new_password }}"
      delegate_to: localhost
      become: false
-
-   - name: Change the local password on the device
-     cisco.ios.ios_user:
-        name: "{{ vault_user }}"
-        password: "{{ new_password }}"
-        update_password: always
-        state: present
+     
+   - name: Pull current local password from Vault KV v2 (AppRole)
+     ansible.builtin.set_fact:
+       local_password: "{{ vault_current.secret.data.data.local_password }}"
+       
+   - name: Update password for target user
+     ansible.builtin.user:
+       name: rhel
+       password: "{{ local_password }}"
+   #  no_log: true
+   
+   #- name: Change the local password on the device
+   #  cisco.ios.ios_user:
+   #     name: "{{ vault_user }}"
+   #     password: "{{ new_password }}"
+   #     update_password: always
+   #     state: present
 
    - name: Kill the current SSH session
      ansible.builtin.meta: reset_connection
