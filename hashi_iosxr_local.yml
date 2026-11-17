@@ -20,6 +20,7 @@
    - name: Generate new random local password 
      ansible.builtin.set_fact:
        new_password: "{{ lookup('ansible.builtin.password', '/dev/null length=16 chars=ascii_letters,digits,punctuation') }}"
+     delegate_to: localhost
      #no_log: true
 
    - name: Pull current local device password from Vault KV v2 (AppRole)
@@ -37,6 +38,7 @@
        path: "{{ vault_path }}"
        url: "{{ vault_url }}"
        data: "{{ vault_current.secret.data | combine({'local_password': new_password}) }}"
+     delegate_to: localhost
 
    - name: Pull current local device password from Vault KV v2 (AppRole)
      hashicorp.vault.kv2_secret_info:
@@ -50,6 +52,7 @@
    - name: Pull current local password from Vault KV v2 (AppRole)
      ansible.builtin.set_fact:
        local_password: "{{ vault_new.secret.data.local_password }}"
+     delegate_to: localhost
    
    #- name: Change the local password on the device
    #  cisco.ios.ios_user:
