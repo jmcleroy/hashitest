@@ -1,0 +1,72 @@
+---
+- name: Change local password for IOS/IOSXE devices
+  hosts: all
+  gather_facts: false
+  connection: ansible.netcommon.network_cli
+  vars:
+    vault_url: "{{ lookup('env', 'VAULT_ADDR') }}"
+    vault_role_id: "{{ lookup('env', 'VAULT_APPROLE_ROLE_ID') }}"
+    vault_secret_id: "{{ lookup('env', 'VAULT_APPROLE_SECRET_ID') }}"
+    vault_path: "aws_creds"
+    vault_auth: &vault_auth
+      url: "{{ vault_url }}"
+      auth_method: approle
+      role_id: "{{ vault_role_id }}"
+      secret_id: "{{ vault_secret_id }}"
+      engine_mount_point: "secret"
+      namespace: "root"
+     
+  tasks:
+   - name: Generate new random local password 
+     ansible.builtin.set_fact:
+       new_password: "{{ lookup('ansible.builtin.password', '/dev/null length=16 chars=ascii_letters,digits,punctuation') }}"
+     delegate_to: localhost
+     #no_log: true
+
+   - name: Pull current local device password from Vault KV v2 (AppRole)
+     hashicorp.vault.kv2_secret_info:
+       <<: *vault_auth
+       path: "{{ vault_path }}"
+       url: "{{ vault_url }}"
+     register: vault_current
+     delegate_to: localhost
+     #no_log: true
+
+   - name: Merge and update specific keys
+     hashicorp.vault.kv2_secret:
+       <<: *vault_auth
+       path: "{{ vault_path }}"
+       url: "{{ vault_url }}"
+       data: "{{ vault_current.secret.data | combine({'local_password': new_password}) }}"
+     delegate_to: localhost
+     #no_log: true
+
+   - name: Pull current local device password from Vault KV v2 (AppRole)
+     hashicorp.vault.kv2_secret_info:
+       <<: *vault_auth
+       path: "{{ vault_path }}"
+       url: "{{ vault_url }}"
+     register: vault_new
+     delegate_to: localhost
+     #no_log: true
+     
+   - name: Pull current local password from Vault KV v2 (AppRole)
+     ansible.builtin.set_fact:
+       local_password: "{{ vault_new.secret.data.local_password }}"
+     delegate_to: localhost
+     #no_log: true
+   
+   - name: Change the local password on the device
+     cisco.ios.ios_user:
+        name: "{{ vault_user }}"
+        password: "{{ local_password }}"
+        update_password: always
+        state: present
+
+   - name: Kill the current SSH session
+     ansible.builtin.meta: reset_connection
+       
+   - name: Log back in with the new password to the device
+     cisco.ios.ios_config:
+       - show running configuration
+     register: result
