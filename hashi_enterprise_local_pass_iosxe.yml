@@ -53,12 +53,13 @@
    - name: Pull current local password from Vault KV v2 (AppRole)
      ansible.builtin.set_fact:
        local_password: "{{ vault_new.secret.data.local_password }}"
+       local_username: "{{ vault_new.secret.data.local_username }}"
      delegate_to: localhost
      #no_log: true
    
    - name: Change the local password on the device
      cisco.ios.ios_user:
-        name: "{{ vault_user }}"
+        name: "{{ local_username }}"
         password: "{{ local_password }}"
         update_password: always
         state: present
