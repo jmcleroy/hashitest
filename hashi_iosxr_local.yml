@@ -32,7 +32,7 @@
      #no_log: true
 
    - name: Merge and update specific keys
-     hashicorp.vault.vault_kv2_write:
+     hashicorp.vault.kv2_secret:
        <<: *vault_auth
        path: "{{ vault_path }}"
        url: "{{ vault_url }}"
