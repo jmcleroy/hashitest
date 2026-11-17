@@ -7,7 +7,7 @@
     vault_url: "{{ lookup('env', 'VAULT_ADDR') }}"
     vault_role_id: "{{ lookup('env', 'VAULT_APPROLE_ROLE_ID') }}"
     vault_secret_id: "{{ lookup('env', 'VAULT_APPROLE_SECRET_ID') }}"
-    vault_path: "{{ vault_path_id }}"
+    vault_path: "aws_creds"
     vault_auth: &vault_auth
       url: "{{ vault_url }}"
       auth_method: approle
