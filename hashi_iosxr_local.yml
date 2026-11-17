@@ -43,7 +43,7 @@
      
    - name: Pull current local password from Vault KV v2 (AppRole)
      ansible.builtin.set_fact:
-       local_password: "{{ vault_current.secret.data.data.local_password }}"
+       local_password: "{{ vault_current.secret.data.local_password }}"
        
   # - name: Update password for target user
   #   ansible.builtin.user:
