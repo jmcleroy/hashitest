@@ -25,7 +25,7 @@
    - name: 2 | Write new community to Vault KV v2 (new version, check-and-set)
      hashicorp.vault.kv2_secret:
        <<: *vault_auth
-       path: "{{ vault_mount }}/data/{{ vault_path }}"
+       path: "{{ secret/data/data/{{ vault_path }}"
        data:
          local_password: "{{ new_password }}"
          rotated_by: ansible
