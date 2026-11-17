@@ -36,7 +36,7 @@
        <<: *vault_auth
        path: "{{ vault_path }}"
        url: "{{ vault_url }}"
-       data: "{{ vault_current.secret | combine({'local_password': "{{ new_password }}") }}"
+       data: "{{ vault_current.secret | combine({'local_password': new_password}) }}"
 
    - name: Pull current local device password from Vault KV v2 (AppRole)
      hashicorp.vault.kv2_secret_info:
